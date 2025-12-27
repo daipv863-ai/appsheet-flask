@@ -16,15 +16,15 @@ def get_data():
     conn = pyodbc.connect(conn_str)
     cursor = conn.cursor()
 
-    cursor.execute("SELECT TOP 10 * FROM SanPham")
+    cursor.execute("SELECT TOP 10 * FROM San_Pham_Moi")
     rows = cursor.fetchall()
 
     result = []
     for row in rows:
         result.append({
-            "MaSP": row[0],
-            "TenSP": row[1],
-            "SoLuong": row[2]
+            "MaVT": row[0],
+            "TenMoTa": row[1],
+            "MaHeNhom": row[2]
         })
 
     conn.close()
