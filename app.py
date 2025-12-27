@@ -1,20 +1,34 @@
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify
+import pyodbc
 
 app = Flask(__name__)
 
-# Route test
-@app.route("/")
-def home():
-    return "Flask is running OK"
+conn_str = (
+    "DRIVER={ODBC Driver 17 for SQL Server};"
+    "SERVER=VHTPF79;"
+    "DATABASE=PXK20250612;"
+    "UID=sa;"
+    "PWD=12345678"
+)
 
-# Route cho AppSheet
-@app.route("/appsheet", methods=["POST"])
-def appsheet():
-    data = request.json
-    return jsonify({
-        "status": "ok",
-        "data": data
-    })
+@app.route("/getdata")
+def get_data():
+    conn = pyodbc.connect(conn_str)
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT TOP 10 * FROM SanPham")
+    rows = cursor.fetchall()
+
+    result = []
+    for row in rows:
+        result.append({
+            "MaSP": row[0],
+            "TenSP": row[1],
+            "SoLuong": row[2]
+        })
+
+    conn.close()
+    return jsonify(result)
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host="0.0.0.0", port=5000)
